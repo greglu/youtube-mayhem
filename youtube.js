@@ -40,9 +40,7 @@ window.Youtube = {};
     }
 
     // If a video is already playing, we can stop it by removing the SWF
-    if (yt.player) {
-      swfobject.removeSWF(yt.player.id);
-    }
+    yt.unloadVideo();
 
     // Using swfobject will consume the containing div, so we need to re-append it
     if (yt.container.find('#ytapiplayer').length == 0) {
@@ -57,6 +55,13 @@ window.Youtube = {};
       "ytapiplayer", $(window).width(), $(window).height(), "8", null, null, params, attrs);
 
     yt.currentYoutubeId = youtubeId;
+  };
+
+  yt.unloadVideo = function() {
+    if (yt.player) {
+      swfobject.removeSWF(yt.player.id);
+      yt.player = null;
+    }
   };
 
   // Reloads a currently playing video and resumes at the same place. Bind this function to

@@ -25,18 +25,15 @@ window.Youtube = {};
     yt.container = $(ele);
   };
 
-  yt.loadVideo = function(youtubeIdOrLink, startTime) {
-    var youtubeId = yt.extractYoutubeId(youtubeIdOrLink);
+  yt.loadVideo = function(youtubeIdOrLink, user_options) {
+    // startTime: defines the time position (in seconds) at which to begin playing the video.
+    // loop: 0 or 1 to continuously loop the video.
+    var options = $.extend({ startTime: 0, loop: 0 }, user_options);
 
+    var youtubeId = yt.extractYoutubeId(youtubeIdOrLink);
     if (!youtubeId) {
       console.log("Youtube ID not found from: " + youtubeIdOrLink);
       return;
-    }
-
-    // We need to be able to load a video at a specific start time in order to resume it on
-    // browser resizes. If this argument isn't given, just start at the beginning of the video.
-    if (!startTime) {
-      startTime = 0;
     }
 
     // If a video is already playing, we can stop it by removing the SWF
@@ -47,12 +44,21 @@ window.Youtube = {};
       yt.container.append($('<div id="ytapiplayer"/>'));
     }
 
-    var params = { allowScriptAccess: "always" };
-    var attrs = { id: "ytplayer" };
-    swfobject.embedSWF("http://www.youtube.com/v/" + youtubeId +
-        "?enablejsapi=1&modestbranding=1&rel=0&showinfo=0&autohide=1&" +
-        "iv_load_policy=3&version=3&autoplay=1&playerapiid=ytplayer&start=" + startTime,
-      "ytapiplayer", $(window).width(), $(window).height(), "8", null, null, params, attrs);
+    var youtubeEmbedLink = "http://www.youtube.com/v/" + youtubeId +
+      "?enablejsapi=1&modestbranding=1&rel=0&showinfo=0&autohide=1&" +
+      "iv_load_policy=3&version=3&autoplay=1&playerapiid=ytplayer&start=" + options.startTime;
+
+    // In order to loop a single video, you need to create a "playlist" out of it. This is documented
+    // in the Youtube API (https://developers.google.com/youtube/player_parameters#loop)
+    if (options.loop == 1) {
+      youtubeEmbedLink += "&loop=1&playlist=" + youtubeId;
+    }
+
+    // Ordered arguments and optionals instead of using an argument map makes me cry.
+    // https://code.google.com/p/swfobject/wiki/documentation#STEP_3:_Embed_your_SWF_with
+    swfobject.embedSWF(youtubeEmbedLink, "ytapiplayer",
+      $(window).width(), $(window).height(), "8", null, null,
+      { allowScriptAccess: "always" }, { id: "ytplayer" });
 
     yt.currentYoutubeId = youtubeId;
   };
@@ -64,12 +70,18 @@ window.Youtube = {};
     }
   };
 
-  // Reloads a currently playing video and resumes at the same place. Bind this function to
-  // the browser resize event in order to get the player size to keep fitting.
+  // Reloads a currently playing video and resumes at the same place.
   yt.reloadVideo = function() {
     if (!yt.currentYoutubeId) { return; }
     var resumeTime = yt.player.getCurrentTime();
     yt.loadVideo(yt.currentYoutubeId, resumeTime);
+  };
+
+  // Resize the video player to fit the screen. Bind to the window resize event
+  yt.resizeVideo = function(e) {
+    if (yt.player) {
+      $(yt.player).width($(window).width()).height($(window).height());
+    }
   };
 
   // Accepts a link or id (youtube format is 11 alphanumeric characters), parses out the
@@ -143,5 +155,5 @@ function debounce(func, wait, immediate) {
 $(function() {
   Youtube.setContainer($('#youtube-window'));
   Youtube.loadVideo("itvJybdcYbI");
-  $(window).resize(debounce(Youtube.reloadVideo, 500));
+  $(window).resize(debounce(Youtube.resizeVideo, 300));
 });

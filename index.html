@@ -5,104 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       body { margin: 0; }
-      #player-window:-webkit-full-screen  { display: table; margin: auto; float: none; width: 100%; height: 100%; }
-      #player-window:-moz-full-screen     { display: table; margin: auto; float: none; width: 100%; height: 100%; }
-      #player-window:-ms-full-screen      { display: table; margin: auto; float: none; width: 100%; height: 100%; }
-      #player-window:-o-full-screen       { display: table; margin: auto; float: none; width: 100%; height: 100%; }
-      #player-window:full-screen          { display: table; margin: auto; float: none; width: 100%; height: 100%; }
     </style>
   </head>
   <body>
-    <script type="text/javascript" src="swfobject.js"></script>
-    <div id="player-window">
-      <div id="ytapiplayer">
-        You need Flash player 8+ and JavaScript enabled to view this video.
-      </div>
-    </div>
-
-    <div>
-      <a href="javascript:void(0);" onclick="play();">Play</a>
-    </div>
-    <div>
-      <a href="javascript:void(0);" onclick="pause();">Pause</a>
-    </div>
-    <div>
-      <a href="javascript:void(0);" onclick="stop();">Stop</a>
+    <div id="youtube-window">
     </div>
 
     <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="swfobject.js"></script>
-    <script type="text/javascript">
-      function debounce(func, wait, immediate) {
-        var timeout, result;
-        return function() {
-          var context = this, args = arguments;
-          var later = function() {
-            timeout = null;
-            if (!immediate) result = func.apply(context, args);
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) result = func.apply(context, args);
-          return result;
-        };
-      };
-
-      function loadYoutubeVideo(youtubeId, startTime) {
-        if (!startTime) {
-          startTime = 0;
-        }
-
-        swfobject.removeSWF('ytplayer');
-
-        if ($('#ytapiplayer').length == 0) {
-          $('#player-window').append($('<div id="ytapiplayer"/>'));
-        }
-
-        var params = { allowScriptAccess: "always" };
-        var attrs = { id: "ytplayer" };
-        swfobject.embedSWF("http://www.youtube.com/v/" + youtubeId + "?enablejsapi=1&modestbranding=1&rel=0&showinfo=0&autohide=1&iv_load_policy=3&version=3&autoplay=1&playerapiid=ytplayer&start=" + startTime,
-                           "ytapiplayer", $(window).width(), $(window).height(), "8", null, null, params, attrs);
-
-        window.currentYoutubeId = youtubeId;
-      }
-
-      loadYoutubeVideo("itvJybdcYbI");
-
-      function onYouTubePlayerReady(playerId) {
-        ytplayer = document.getElementById(playerId);
-
-        // The following is an example of adding an event listener on the youtube player.
-        // Refer here for more info: https://developers.google.com/youtube/js_api_reference#Events
-        // ytplayer.addEventListener('onStateChange', 'stateChange');
-      }
-
-      function play() {
-        if (ytplayer) {
-          ytplayer.playVideo();
-        }
-      }
-      function pause() {
-        if (ytplayer) {
-          ytplayer.pauseVideo();
-        }
-      }
-      function stop() {
-        if (ytplayer) {
-          ytplayer.stopVideo();
-        }
-      }
-
-      function taylorswift() {
-        stop();
-        loadYoutubeVideo("vNoKguSdy4Y");
-      }
-
-      $(window).resize(debounce(function(e) {
-        var resumeTime = ytplayer.getCurrentTime();
-        loadYoutubeVideo(currentYoutubeId, resumeTime);
-      }, 500));
-    </script>
+    <script type="text/javascript" src="youtube.js"></script>
   </body>
 </html>

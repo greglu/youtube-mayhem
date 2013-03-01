@@ -1,19 +1,30 @@
 /**
- * Example usage:
+ * Example initialization:
  *
+ *     // Set the Youtube player to play within this div. Expects a jquery object.
  *     Youtube.setContainer($('#youtube-window'));
  *     Youtube.loadVideo("itvJybdcYbI");
  *
- * Calling Youtube.loadVideo will cause it to autoplay as soon as it's loaded. You can control
- * it with Youtube.play(), Youtube.pause(), Youtube.stop(), or Youtube.taylorswift()
+ * Calling Youtube.loadVideo(youtubeIdOrLink, userOptions) will cause it to autoplay as soon as it's
+ * loaded. The following is a list of arguments:
  *
- * Youtube.loadVideo will accept a full youtube URL or just the ID (which is an 11 character alphanumeric string).
+ *   - youtubeIdOrLink: accepts a full youtube URL or just the ID (which is an 11 character alphanumeric string)
+ *   - userOptions (map object):
+ *      - startTime (defaults to 0): integer argument in seconds that represents the point in the video to
+ *                                at which to start playback.
+ *      - loop (defaults to 0): set this to 1 to keep looping the video
  *
- * Browser resizes will cause the video player to be sizes incorrectly, so you can also include:
+ * Javascript API controls:
+ *   - Youtube.play
+ *   - Youtube.pause
+ *   - Youtube.stop
+ *   - Youtube.taylorswift
+ *   - Youtube.reloadVideo
+ *   - Youtube.unloadVideo
  *
- *     $(window).resize(debounce(Youtube.reloadVideo, 500));
+ * Browser resize events should call Youtube.resizeVideo in order to adapt to the viewport size:
  *
- * Which will reload the video, and resume at the same player position after resizing.
+ *     $(window).resize(debounce(Youtube.resizeVideo, 500));
  *
  */
 
@@ -25,10 +36,10 @@ window.Youtube = {};
     yt.container = $(ele);
   };
 
-  yt.loadVideo = function(youtubeIdOrLink, user_options) {
+  yt.loadVideo = function(youtubeIdOrLink, userOptions) {
     // startTime: defines the time position (in seconds) at which to begin playing the video.
     // loop: 0 or 1 to continuously loop the video.
-    var options = $.extend({ startTime: 0, loop: 0 }, user_options);
+    var options = $.extend({ startTime: 0, loop: 0 }, userOptions);
 
     var youtubeId = yt.extractYoutubeId(youtubeIdOrLink);
     if (!youtubeId) {

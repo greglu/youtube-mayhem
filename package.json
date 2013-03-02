@@ -1,0 +1,27 @@
+{
+  "name": "youtube-mayhem",
+  "version": "0.0.0",
+  "description": "YOUTUBE MAYHEM!",
+  "main": "youtube.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/greglu/youtube-mayhem.git"
+  },
+  "browserDependencies": {
+    "domready": "~0.2.11",
+    "jQuery": "~1.7.4"
+  },
+  "keywords": [
+    "mayhem",
+    "youtube",
+    "javascript",
+    "js"
+  ],
+  "author": "Greg Lu",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "090c3c597bc77fdb451fa339bb93111470f04879"
+}
